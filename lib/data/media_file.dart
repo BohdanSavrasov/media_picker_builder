@@ -1,12 +1,12 @@
 class MediaFile {
   /// Unique identifier for the file
-  String id;
+  String? id;
 
   /// Date added in seconds (unix timestamp)
-  int dateAdded;
+  int? dateAdded;
 
   /// Original file path
-  String path;
+  String? path;
 
   /// Thumbnails from android (NOT iOS) need to have their orientation fixed
   /// based on the returned [orientation]
@@ -19,29 +19,30 @@ class MediaFile {
   ///                    fit: BoxFit.cover,
   ///                    )
   /// Note: If thumbnail returned is null you will have to call [MediaPickerBuilder.getThumbnail]
-  String thumbnailPath;
+  String? thumbnailPath;
 
   /// Orientation in degrees (i.e. 0, 90, 180, 270)
-  int orientation;
+  int? orientation;
 
   /// Video duration in milliseconds
-  int duration;
+  int? duration;
 
   /// Supported on Android only
-  String mimeType;
+  String? mimeType;
 
   /// On iOS, original file name is retrieved only if [loadIOSPath] is true
-  String fileName;
+  String? fileName;
 
-  MediaType type;
+  MediaType? type;
 
-  MediaFile(
-      {this.id,
-      this.dateAdded,
-      this.path,
-      this.thumbnailPath,
-      this.orientation,
-      this.type});
+  MediaFile({
+    this.id,
+    this.dateAdded,
+    this.path,
+    this.thumbnailPath,
+    this.orientation,
+    this.type,
+  });
 
   MediaFile.fromJson(Map<String, dynamic> json)
       : id = json['id'],

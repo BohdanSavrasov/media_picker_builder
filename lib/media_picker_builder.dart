@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
-
 import 'package:media_picker_builder/data/album.dart';
 import 'package:media_picker_builder/data/media_file.dart';
 
@@ -18,20 +16,24 @@ class MediaPickerBuilder {
   /// [loadIOSPaths] For iOS only, to optimize the speed of querying the files you can set this to false,
   /// but if you do that you will have to get the path & video duration after selection is done
   static Future<List<Album>> getAlbums({
-    @required bool withImages,
-    @required bool withVideos,
+    required bool withImages,
+    required bool withVideos,
     bool loadIOSPaths = true,
   }) async {
-    final String json = await _channel.invokeMethod(
-      "getAlbums",
-      {
-        "withImages": withImages,
-        "withVideos": withVideos,
-        "loadIOSPaths": loadIOSPaths,
-      },
-    );
-    final encoded = jsonDecode(json);
-    return encoded.map<Album>((album) => Album.fromJson(album)).toList();
+    try {
+      final String json = await _channel.invokeMethod(
+        "getAlbums",
+        {
+          "withImages": withImages,
+          "withVideos": withVideos,
+          "loadIOSPaths": loadIOSPaths,
+        },
+      );
+      final encoded = jsonDecode(json);
+      return encoded.map<Album>((album) => Album.fromJson(album)).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   /// Returns the thumbnail path of the media file returned in method [getAlbums].
@@ -46,41 +48,49 @@ class MediaPickerBuilder {
   ///                    File(mediaFile.thumbnailPath),
   ///                    fit: BoxFit.cover,
   ///                    )
-  static Future<String> getThumbnail({
-    @required String fileId,
-    @required MediaType type,
+  static Future<String?> getThumbnail({
+    required String fileId,
+    required MediaType type,
   }) async {
-    final String path = await _channel.invokeMethod(
-      'getThumbnail',
-      {
-        "fileId": fileId,
-        "type": type.index,
-      },
-    );
-    return path;
+    try {
+      final String? path = await _channel.invokeMethod(
+        'getThumbnail',
+        {
+          "fileId": fileId,
+          "type": type.index,
+        },
+      );
+      return path;
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Returns the [MediaFile] of a file by the unique identifier
   /// [loadIOSPath] Whether or not to try and fetch path & video duration for iOS.
   /// Android always returns the path & duration
   /// [loadThumbnail] Whether or not to generate a thumbnail
-  static Future<MediaFile> getMediaFile({
-    @required String fileId,
-    @required MediaType type,
+  static Future<MediaFile?> getMediaFile({
+    required String fileId,
+    required MediaType type,
     bool loadIOSPath = true,
     bool loadThumbnail = false,
   }) async {
-    final String json = await _channel.invokeMethod(
-      'getMediaFile',
-      {
-        "fileId": fileId,
-        "type": type.index,
-        "loadIOSPath": loadIOSPath,
-        "loadThumbnail": loadThumbnail,
-      },
-    );
-    final encoded = jsonDecode(json);
-    return MediaFile.fromJson(encoded);
+    try {
+      final String json = await _channel.invokeMethod(
+        'getMediaFile',
+        {
+          "fileId": fileId,
+          "type": type.index,
+          "loadIOSPath": loadIOSPath,
+          "loadThumbnail": loadThumbnail,
+        },
+      );
+      final encoded = jsonDecode(json);
+      return MediaFile.fromJson(encoded);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// A convenient function that converts image orientation to quarter turns for widget [RotatedBox]
